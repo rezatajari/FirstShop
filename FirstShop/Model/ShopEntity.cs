@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FirstShop.Model
 {
-public    class ShopEntity
+    public class ShopEntity
     {
         public int Id { get; set; }
         public ItemsEntity itemsEntity { get; set; }

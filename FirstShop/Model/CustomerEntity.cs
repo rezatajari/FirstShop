@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FirstShop.Model
 {
@@ -9,6 +10,6 @@ namespace FirstShop.Model
         public int Id { get; set; }
         public string fullName { get; set; }
         public DateTime enterDateTime { get; set; }
+                        
     }
-
 }
