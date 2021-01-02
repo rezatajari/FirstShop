@@ -7,7 +7,8 @@ namespace FirstShop.Model
     public class BasketEntity
     {
         public int Id { get; set; }
-        public CustomerEntity customerEntity { get; set; }
-        public ItemsEntity itemsEntity { get; set; }
+        public DateTime EnterDateTime { get; set; }
+        public CustomerEntity CustomerEntity { get; set; }
+        public ItemsEntity ItemsEntity { get; set; }
     }
 }

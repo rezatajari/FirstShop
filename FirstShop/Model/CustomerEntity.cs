@@ -8,8 +8,6 @@ namespace FirstShop.Model
     public class CustomerEntity
     {
         public int Id { get; set; }
-        public string fullName { get; set; }
-        public DateTime enterDateTime { get; set; }
-                        
+        public string FullName { get; set; }
     }
 }
