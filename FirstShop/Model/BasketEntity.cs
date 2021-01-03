@@ -9,6 +9,6 @@ namespace FirstShop.Model
         public int Id { get; set; }
         public DateTime EnterDateTime { get; set; }
         public CustomerEntity CustomerEntity { get; set; }
-        public ItemsEntity ItemsEntity { get; set; }
+        public List<ItemsEntity> ItemsList { get; set; }
     }
 }

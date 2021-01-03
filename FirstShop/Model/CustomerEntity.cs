@@ -9,5 +9,6 @@ namespace FirstShop.Model
     {
         public int Id { get; set; }
         public string FullName { get; set; }
+        public List<ItemsEntity> Items { get; set; }
     }
 }

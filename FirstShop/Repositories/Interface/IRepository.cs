@@ -8,9 +8,9 @@ namespace FirstShop.Repositories.Interface
 {
     public interface IRepository
     {
-        Task<List<CustomerEntity>> CreatingCusomer();
-        Task<ItemsEntity> ImportItems();
-        Task<ItemsEntity> CreateItemsCustomer();
-        Task<bool> ChackExistItems(ItemsEntity itemsEntity);
+        Task<List<ItemsEntity>> ImportItems();
+        Task<List<CustomerEntity>> CreatingCustomer();
+        Task<List<ItemsEntity>> CreateItemsCustomer();
+        Task<bool> ChackExistItems(List<ItemsEntity> customerItemList, List<ItemsEntity> shopItemList);
     }
 }

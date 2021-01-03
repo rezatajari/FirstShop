@@ -11,54 +11,39 @@ namespace FirstShop.Model
         /// </summary>
         /// <param name="itemsEntity"></param>
         /// <returns></returns>
-        public ItemsEntity SetItemsCustomer(ItemsEntity itemsEntity)
+        public ItemsEntity SetItemsCustomer(ItemsEntity items)
         {
             // یک عدد رندوم بین 1 الی 7 
-            var randomItem = new Random().Next(1, 8); 
+            var randomItem = new Random().Next(1, 6);
 
-            // انتخاب کردن اسم ایتم بدست آمده بصورت تصادفی
-            string getRandomItemName = Enum.GetName(typeof(ItemsEnum), randomItem);
-
-            switch (getRandomItemName)
+            switch (randomItem)
             {
-                case "milk":
-                    itemsEntity.Milk++;
+                case 1:
+                    items.Stuff = ItemsEntity.MILK;
+                    items.Qnt++;
                     break;
-                case "egg":
-                    itemsEntity.Egg++;
+                case 2:
+                    items.Stuff = ItemsEntity.BREAD;
+                    items.Qnt++;
                     break;
-                case "rice":
-                    itemsEntity.Rice++;
+                case 3:
+                    items.Stuff = ItemsEntity.RICE;
+                    items.Qnt++;
                     break;
-                case "pototo":
-                    itemsEntity.Pototo++;
+                case 4:
+                    items.Stuff = ItemsEntity.POTATO;
+                    items.Qnt++;
                     break;
-                case "yogurt":
-                    itemsEntity.Yogurt++;
-                    break;
-                case "bread":
-                    itemsEntity.Bread++;
-                    break;
-                case "vegetables":
-                    itemsEntity.Vegetables++;
+                case 5:
+                    items.Stuff = ItemsEntity.TOMATO;
+                    items.Qnt++;
                     break;
                 default:
                     Console.WriteLine("don't items correct");
                     break;
             }
 
-            return itemsEntity;
+            return items;
         }
-    }
-
-    public enum ItemsEnum
-    {
-        milk = 1,
-        egg,
-        rice,
-        pototo,
-        yogurt,
-        bread,
-        vegetables
     }
 }
