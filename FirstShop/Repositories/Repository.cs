@@ -47,8 +47,11 @@ namespace FirstShop.Repositories
                     customerList.Add(new CustomerEntity()
                     {
                         Id = i,
-                        FullName = $"customer fullName is test ### {i} ### number Id"
-                    });
+                        FullName = $"reza",
+
+                        // ساختن اقلام مشتری به صورت دستی و رندوم
+                        Items = CreateItemsCustomer().Result   
+            });
                 }
             });
 
@@ -63,21 +66,20 @@ namespace FirstShop.Repositories
         /// <returns></returns>
         public async Task<List<ItemsEntity>> CreateItemsCustomer()
         {
-            var items = new ItemsEntity();
             var itemsList = new List<ItemsEntity>();
             var getRandomItems = new RandomItem();
-
+            
             await Task.Run(() =>
             {
                 for (int i = 1; i <= 4; i++)
                 {
-                    var newItem = getRandomItems.SetItemsCustomer(items);
+                    var newItem = getRandomItems.SetItemsCustomer();
 
                     // زمانی که یک آیتم تکراری انتخاب شده است آیتم مورد نظر در لیست بروزرسانی می گردد
                     var clearDoubleItems = itemsList.FirstOrDefault(a => a.Stuff == newItem.Stuff);
                     if (clearDoubleItems != null)
                     {
-                        clearDoubleItems.Qnt = newItem.Qnt;
+                        clearDoubleItems.Qnt += newItem.Qnt;
                     }
                     else
                     {

@@ -11,8 +11,10 @@ namespace FirstShop.Model
         /// </summary>
         /// <param name="itemsEntity"></param>
         /// <returns></returns>
-        public ItemsEntity SetItemsCustomer(ItemsEntity items)
+        public ItemsEntity SetItemsCustomer()
         {
+            var items = new ItemsEntity();
+
             // یک عدد رندوم بین 1 الی 7 
             var randomItem = new Random().Next(1, 6);
 
