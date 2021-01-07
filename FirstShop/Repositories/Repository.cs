@@ -1,64 +1,86 @@
 ﻿using FirstShop.Model;
 using FirstShop.Repositories.Interface;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FirstShop.Repositories
 {
     public class Repository : IRepository
     {
+        public static List<ItemsEntity> UpdateShopItems { get; set; }
+        public static List<CustomerEntity> UpdateCustomersList { get; set; }
 
         /// <summary>
         /// اضافه کردن 100 واحد به هر کدام از موجودیت های داخل انبار فروشگاه
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ItemsEntity>> ImportItems()
+        public async Task ImportItems()
         {
-            var items = new List<ItemsEntity>();
+            UpdateShopItems = new List<ItemsEntity>();
+            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.MILK, Qnt = 0 });
+            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.BREAD, Qnt = 0 });
+            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.RICE, Qnt = 0 });
+            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.POTATO, Qnt = 0 });
+            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.TOMATO, Qnt = 0 });
 
-            await Task.Run(() =>
+            while (true)
+            {
+                await Task.Run(() =>
                 {
-                    items.Add(new ItemsEntity() { Stuff = ItemsEntity.MILK, Qnt = 100 });
-                    items.Add(new ItemsEntity() { Stuff = ItemsEntity.BREAD, Qnt = 100 });
-                    items.Add(new ItemsEntity() { Stuff = ItemsEntity.RICE, Qnt = 100 });
-                    items.Add(new ItemsEntity() { Stuff = ItemsEntity.POTATO, Qnt = 100 });
-                    items.Add(new ItemsEntity() { Stuff = ItemsEntity.TOMATO, Qnt = 100 });
+                    // اضافه کردن 100 واحدی شیر
+                    var milk = UpdateShopItems.FirstOrDefault(a => a.Stuff == ItemsEntity.MILK);
+                    if (milk != null) milk.Qnt += 100;
+
+                    // اضافه کردن 100 واحدی نان
+                    var bread = UpdateShopItems.FirstOrDefault(a => a.Stuff == ItemsEntity.BREAD);
+                    if (bread != null) bread.Qnt += 100;
+
+                    // اضافه کردن 100 واحدی برنج
+                    var rice = UpdateShopItems.FirstOrDefault(a => a.Stuff == ItemsEntity.RICE);
+                    if (rice != null) rice.Qnt += 100;
+
+                    // اضافه کردن 100 واحدی سیب زمینی
+                    var potato = UpdateShopItems.FirstOrDefault(a => a.Stuff == ItemsEntity.POTATO);
+                    if (potato != null) potato.Qnt += 100;
+
+                    // اضافه کردن 100 واحدی گرجه 
+                    var tomato = UpdateShopItems.FirstOrDefault(a => a.Stuff == ItemsEntity.TOMATO);
+                    if (tomato != null) tomato.Qnt += 100;
                 });
 
-            return items;
+                Thread.Sleep(500);
+            }
         }
-
 
         /// <summary>
         /// ایجاد کردن 50 تا نمونه مشتری ییش فرض
         /// </summary>
         /// <returns></returns>
-        public async Task<List<CustomerEntity>> CreatingCustomer()
+        public async Task CreatingCustomer()
         {
-            var customerList = new List<CustomerEntity>();
+            UpdateCustomersList = new List<CustomerEntity>();
 
-            await Task.Run(() =>
+            while (true)
             {
-                for (int i = 1; i <= 50; i++)
-                {
-                    customerList.Add(new CustomerEntity()
-                    {
-                        Id = i,
-                        FullName = $"reza",
+                await Task.Run(() =>
+                 {
+                     for (int i = 1; i <= 50; i++)
+                     {
+                         UpdateCustomersList.Add(new CustomerEntity()
+                         {
+                             FullName = $"reza",
 
-                        // ساختن اقلام مشتری به صورت دستی و رندوم
-                        Items = CreateItemsCustomer().Result   
-            });
-                }
-            });
+                             // ساختن اقلام مشتری به صورت دستی و رندوم
+                             Items = CreateItemsCustomer().Result
+                         });
+                     }
+                 });
 
-            return customerList;
+                Thread.Sleep(500);
+            }
         }
-
-
 
         /// <summary>
         /// ساختن اقلام مورد نیاز مشتری به صورت دستی
@@ -68,7 +90,7 @@ namespace FirstShop.Repositories
         {
             var itemsList = new List<ItemsEntity>();
             var getRandomItems = new RandomItem();
-            
+
             await Task.Run(() =>
             {
                 for (int i = 1; i <= 4; i++)
