@@ -50,7 +50,8 @@ namespace FirstShop.Repositories
                     if (tomato != null) tomato.Qnt += 100;
                 });
 
-                Thread.Sleep(500);
+                // هر یک دقیقه اقلام مغازه بروزرسانی می شود
+                Thread.Sleep(60 * 1000); 
             }
         }
 
@@ -78,7 +79,8 @@ namespace FirstShop.Repositories
                      }
                  });
 
-                Thread.Sleep(500);
+                // هر یک دقیقه 50 تا مشتری جدید آماده برای رفتن به صف می شوند
+                Thread.Sleep(60 * 1000); 
             }
         }
 

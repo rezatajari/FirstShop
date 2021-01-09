@@ -39,7 +39,7 @@ namespace FirstShop
             var shop = new ShopEntity();
             var basketCustomer = new BasketEntity();
             var pendingCustomerList = new List<CustomerEntity>();
-            var successCustomerBought = new List<CustomerEntity>();
+            var successBought = new List<CustomerEntity>();
             var customersQueue = new Queue<CustomerEntity>();
             int counterCustomerId = 0;
             int counterBasketId = 0;
@@ -72,11 +72,12 @@ namespace FirstShop
                             basketCustomer.ItemsList = fristCustomrInQueue.Items;
                             basketCustomer.EnterDateTime = DateTime.Now;
                             basketCustomer.CustomerEntity = fristCustomrInQueue;
-                            successCustomerBought.Add(fristCustomrInQueue);
+                            successBought.Add(fristCustomrInQueue);
                             ShowResult(fristCustomrInQueue);
                         }
 
-                        Thread.Sleep(100);
+                        // هر مشتری را در یک ثانیه پاسخ داده می شود
+                        Thread.Sleep(1000); 
                     });
                 }
             }
