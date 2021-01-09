@@ -41,47 +41,56 @@ namespace FirstShop
             var basketOfCustomer = new BasketOfCustomer();
             var pendingCustomerList = new List<CustomerEntity>();
             var successBought = new List<CustomerEntity>();
-            var customersQueue = new Queue<CustomerEntity>();
+            var customersList = new List<CustomerEntity>();
+            var listIdSynch = new List<int>();
             var report = new Report();
             int counterCustomerId = 0;
             int counterBasketId = 0;
 
             while (true)
             {
-                customersQueue = Repository.QueueCustomersList;
+                // بروزرسانی لیست مشتری ها
+                customersList = Repository.CustomersList;
 
-                if (customersQueue.Count != 0)
+                if (customersList.Count != 0)
                 {
 
-                    var firstCustomrInQueue = customersQueue.Dequeue();
+                    var filterCustomerList = customersList.OrderBy(x => x.Gender)
+                                                .Where(x => x.Gender == "WOMAN" && !listIdSynch.Contains(x.Id))
+                                                .ToList();
 
-                    await Task.Run(() =>
+                    foreach (var customer in filterCustomerList)
                     {
-                        // بروزرسانی اقلام داخل مغازه
-                        shop.ItemsList = Repository.UpdateShopItems;
-                        firstCustomrInQueue.Id = ++counterCustomerId;
-
-                        // بررسی موجود بودن اقلام مورد نیاز مشتری
-                        bool chackExistItems = repository.ChackExistItems(firstCustomrInQueue.Items, shop.ItemsList).Result;
-
-                        // بررسی موجود بودن لیست اقلام مشتری در مغازه
-                        if (chackExistItems == false)
-                            pendingCustomerList.Add(firstCustomrInQueue);
-                        else
+                        await Task.Run(() =>
                         {
+                            // بروزرسانی اقلام داخل مغازه
+                            shop.ItemsList = Repository.UpdateShopItems;
 
-                            // مشخصات اجناس مورد نظر درخواستی مشتری
-                            var basket = basketOfCustomer.BasketImporter(++counterBasketId,
-                                                             firstCustomrInQueue.Items,
-                                                             DateTime.Now, firstCustomrInQueue);
+                            customer.Id = ++counterCustomerId;
 
-                            successBought.Add(firstCustomrInQueue);
-                            report.ShowResult(basket);
-                        }
+                            // بررسی موجود بودن اقلام مورد نیاز مشتری
+                            bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
 
-                        // هر مشتری را در یک ثانیه پاسخ داده می شود
-                        Thread.Sleep(1000);
-                    });
+                            // بررسی موجود بودن لیست اقلام مشتری در مغازه
+                            if (chackExistItems == false)
+                                pendingCustomerList.Add(customer);
+                            else
+                            {
+                                // مشخصات اجناس مورد نظر درخواستی مشتری
+                                var basket = basketOfCustomer.BasketImporter(++counterBasketId,
+                                                                             customer.Items,
+                                                                             DateTime.Now, customer);
+
+                                successBought.Add(customer);
+                                report.ShowResult(basket);
+                            }
+
+                            listIdSynch.Add(customer.Id);
+
+                            // هر مشتری را در یک ثانیه پاسخ داده می شود
+                            Thread.Sleep(1000);
+                        });
+                    }
                 }
             }
         }

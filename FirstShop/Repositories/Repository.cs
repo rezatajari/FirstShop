@@ -11,7 +11,7 @@ namespace FirstShop.Repositories
     public class Repository : IRepository
     {
         public static List<ItemsEntity> UpdateShopItems { get; set; }
-        public static Queue<CustomerEntity> QueueCustomersList { get; set; }
+        public static List<CustomerEntity> CustomersList { get; set; }
 
         /// <summary>
         /// اضافه کردن 100 واحد به هر کدام از موجودیت های داخل انبار فروشگاه
@@ -62,7 +62,7 @@ namespace FirstShop.Repositories
         /// <returns></returns>
         public async Task CreatingCustomer()
         {
-            QueueCustomersList = new Queue<CustomerEntity>();
+            CustomersList = new List<CustomerEntity>();
 
             while (true)
             {
@@ -83,7 +83,7 @@ namespace FirstShop.Repositories
 
                          customer.Items = CreateItemsCustomer().Result;
 
-                         QueueCustomersList.Enqueue(customer);
+                         CustomersList.Add(customer);
                      }
                  });
 
@@ -212,7 +212,8 @@ namespace FirstShop.Repositories
         /// </summary>
         /// <param name="itemsEntity"></param>
         /// <returns></returns>
-        public async Task<bool> ChackExistItems(List<ItemsEntity> customerItemsList, List<ItemsEntity> shopItemsList)
+        public async Task<bool> ChackExistItems(List<ItemsEntity> customerItemsList,
+                                                List<ItemsEntity> shopItemsList)
         {
             var itemExistOrNot = new ItemsEntity();
 
