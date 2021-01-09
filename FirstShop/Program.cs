@@ -1,6 +1,7 @@
 ﻿using FirstShop.Model;
 using FirstShop.Repositories;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -39,41 +40,45 @@ namespace FirstShop
             var basketCustomer = new BasketEntity();
             var pendingCustomerList = new List<CustomerEntity>();
             var successCustomerBought = new List<CustomerEntity>();
+            var customersQueue = new Queue<CustomerEntity>();
             int counterCustomerId = 0;
             int counterBasketId = 0;
 
             while (true)
             {
-                var customers = Repository.UpdateCustomersList;
+                customersQueue = Repository.QueueCustomersList;
 
-                await Task.Run(() =>
+                if (customersQueue.Count != 0)
                 {
-                    foreach (var customer in customers)
+
+                    var fristCustomrInQueue = customersQueue.Dequeue();
+
+                    await Task.Run(() =>
                     {
+                        // بروزرسانی اقلام داخل مغازه
                         shop.ItemsList = Repository.UpdateShopItems;
-                        customer.Id = ++counterCustomerId;
+                        fristCustomrInQueue.Id = ++counterCustomerId;
 
                         // بررسی موجود بودن اقلام مورد نیاز مشتری
-                        bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
+                        bool chackExistItems = repository.ChackExistItems(fristCustomrInQueue.Items, shop.ItemsList).Result;
 
+                        // بررسی موجود بودن لیست اقلام مشتری در مغازه
                         if (chackExistItems == false)
-                        {
-                            pendingCustomerList.Add(customer);
-                        }
+                            pendingCustomerList.Add(fristCustomrInQueue);
                         else
                         {
                             // مشخصات اجناس مورد نظر درخواستی مشتری
                             basketCustomer.Id = ++counterBasketId;
-                            basketCustomer.ItemsList = customer.Items;
+                            basketCustomer.ItemsList = fristCustomrInQueue.Items;
                             basketCustomer.EnterDateTime = DateTime.Now;
-                            basketCustomer.CustomerEntity = customer;
-                            successCustomerBought.Add(customer);
-                            ShowResult(customer);
+                            basketCustomer.CustomerEntity = fristCustomrInQueue;
+                            successCustomerBought.Add(fristCustomrInQueue);
+                            ShowResult(fristCustomrInQueue);
                         }
 
                         Thread.Sleep(100);
-                    }
-                });
+                    });
+                }
             }
         }
         #endregion
