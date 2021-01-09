@@ -1,5 +1,6 @@
 ﻿using FirstShop.Model;
 using FirstShop.Repositories;
+using FirstShop.View;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,10 +38,11 @@ namespace FirstShop
         {
             var repository = new Repository();
             var shop = new ShopEntity();
-            var basketCustomer = new BasketEntity();
+            var basketOfCustomer = new BasketOfCustomer();
             var pendingCustomerList = new List<CustomerEntity>();
             var successBought = new List<CustomerEntity>();
             var customersQueue = new Queue<CustomerEntity>();
+            var report = new Report();
             int counterCustomerId = 0;
             int counterBasketId = 0;
 
@@ -51,54 +53,40 @@ namespace FirstShop
                 if (customersQueue.Count != 0)
                 {
 
-                    var fristCustomrInQueue = customersQueue.Dequeue();
+                    var firstCustomrInQueue = customersQueue.Dequeue();
 
                     await Task.Run(() =>
                     {
                         // بروزرسانی اقلام داخل مغازه
                         shop.ItemsList = Repository.UpdateShopItems;
-                        fristCustomrInQueue.Id = ++counterCustomerId;
+                        firstCustomrInQueue.Id = ++counterCustomerId;
 
                         // بررسی موجود بودن اقلام مورد نیاز مشتری
-                        bool chackExistItems = repository.ChackExistItems(fristCustomrInQueue.Items, shop.ItemsList).Result;
+                        bool chackExistItems = repository.ChackExistItems(firstCustomrInQueue.Items, shop.ItemsList).Result;
 
                         // بررسی موجود بودن لیست اقلام مشتری در مغازه
                         if (chackExistItems == false)
-                            pendingCustomerList.Add(fristCustomrInQueue);
+                            pendingCustomerList.Add(firstCustomrInQueue);
                         else
                         {
+
                             // مشخصات اجناس مورد نظر درخواستی مشتری
-                            basketCustomer.Id = ++counterBasketId;
-                            basketCustomer.ItemsList = fristCustomrInQueue.Items;
-                            basketCustomer.EnterDateTime = DateTime.Now;
-                            basketCustomer.CustomerEntity = fristCustomrInQueue;
-                            successBought.Add(fristCustomrInQueue);
-                            ShowResult(fristCustomrInQueue);
+                            var basket = basketOfCustomer.BasketImporter(++counterBasketId,
+                                                             firstCustomrInQueue.Items,
+                                                             DateTime.Now, firstCustomrInQueue);
+
+                            successBought.Add(firstCustomrInQueue);
+                            report.ShowResult(basket);
                         }
 
                         // هر مشتری را در یک ثانیه پاسخ داده می شود
-                        Thread.Sleep(1000); 
+                        Thread.Sleep(1000);
                     });
                 }
             }
         }
         #endregion
 
-        #region گزارش گیری و نمایش
-        public static void ShowResult(CustomerEntity customer)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Id: {customer.Id}");
-            Console.WriteLine($"FullName: {customer.FullName}");
-            foreach (var item in customer.Items)
-            {
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"Stuff is: {item.Stuff}");
-                Console.WriteLine($"Quntity is: {item.Qnt}");
-            }
-            Console.WriteLine("###########################");
-            Console.ForegroundColor = default;
-        }
-        #endregion
+
     }
 }
