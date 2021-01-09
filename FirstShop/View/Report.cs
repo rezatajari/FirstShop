@@ -12,7 +12,10 @@ namespace FirstShop.View
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Id: {basket.Id}");
+            Console.WriteLine($"Gender: {basket.CustomerEntity.Gender}");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"FullName: {basket.CustomerEntity.FullName}");
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Date Entrance: {basket.EnterDateTime}");
             foreach (var item in basket.ItemsList)
             {

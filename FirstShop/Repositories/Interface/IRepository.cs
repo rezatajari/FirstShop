@@ -11,6 +11,9 @@ namespace FirstShop.Repositories.Interface
         Task ImportItems();
         Task CreatingCustomer();
         Task<List<ItemsEntity>> CreateItemsCustomer();
+        string GetGender();
+        string GetManName();
+        string GetWomanName();
         Task<bool> ChackExistItems(List<ItemsEntity> customerItemList, List<ItemsEntity> shopItemList);
     }
 }

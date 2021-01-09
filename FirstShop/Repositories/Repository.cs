@@ -1,5 +1,6 @@
 ﻿using FirstShop.Model;
 using FirstShop.Repositories.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -51,7 +52,7 @@ namespace FirstShop.Repositories
                 });
 
                 // هر یک دقیقه اقلام مغازه بروزرسانی می شود
-                Thread.Sleep(60 * 1000); 
+                Thread.Sleep(60 * 1000);
             }
         }
 
@@ -69,18 +70,25 @@ namespace FirstShop.Repositories
                  {
                      for (int i = 1; i <= 50; i++)
                      {
-                         QueueCustomersList.Enqueue(new CustomerEntity()
-                         {
-                             FullName = $"reza",
+                         var customer = new CustomerEntity();
 
-                             // ساختن اقلام مشتری به صورت دستی و رندوم
-                             Items = CreateItemsCustomer().Result
-                         });
+                         var gender = GetGender();
+
+                         if (gender == "MAN")
+                             customer.FullName = GetManName();
+                         else
+                             customer.FullName = GetWomanName();
+
+                         customer.Gender = gender;
+
+                         customer.Items = CreateItemsCustomer().Result;
+
+                         QueueCustomersList.Enqueue(customer);
                      }
                  });
 
                 // هر یک دقیقه 50 تا مشتری جدید آماده برای رفتن به صف می شوند
-                Thread.Sleep(60 * 1000); 
+                Thread.Sleep(60 * 1000);
             }
         }
 
@@ -113,6 +121,90 @@ namespace FirstShop.Repositories
             });
 
             return itemsList;
+        }
+
+        /// <summary>
+        /// گرفتن زن یا مرد بودن مشتری به صورت تصادفی
+        /// </summary>
+        /// <returns></returns>
+        public string GetGender()
+        {
+            const string MAN = "MAN";
+            const string WOMAN = "WOMAN";
+
+            var random = new Random().Next(1, 3);
+
+            if (random == 1)
+                return MAN;
+            else
+                return WOMAN;
+
+        }
+
+        /// <summary>
+        /// گرفتن اسم مرد 
+        /// </summary>
+        /// <returns></returns>
+        public string GetManName()
+        {
+            const string ALI = "ALI";
+            const string HASAN = "HASAN";
+            const string MOHAMMAD = "MOHAMMAD";
+            const string AMIRALI = "AMIRALI";
+
+            var random = new Random().Next(1, 5);
+
+            string manName = "";
+            switch (random)
+            {
+                case 1:
+                    manName = ALI;
+                    break;
+                case 2:
+                    manName = HASAN;
+                    break;
+                case 3:
+                    manName = MOHAMMAD;
+                    break;
+                case 4:
+                    manName = AMIRALI;
+                    break;
+            }
+
+            return manName;
+        }
+
+        /// <summary>
+        /// گرفتن اسم زن
+        /// </summary>
+        /// <returns></returns>
+        public string GetWomanName()
+        {
+            const string SARA = "SARA";
+            const string NASTARAN = "NASTARAN";
+            const string BANAFSHE = "BANAFSHE";
+            const string SAJEDE = "SAJEDE";
+
+            var random = new Random().Next(1, 5);
+
+            string womanName = "";
+            switch (random)
+            {
+                case 1:
+                    womanName = SARA;
+                    break;
+                case 2:
+                    womanName = NASTARAN;
+                    break;
+                case 3:
+                    womanName = BANAFSHE;
+                    break;
+                case 4:
+                    womanName = SAJEDE;
+                    break;
+            }
+
+            return womanName;
         }
 
         /// <summary>
