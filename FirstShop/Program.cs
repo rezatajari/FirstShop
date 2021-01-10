@@ -42,6 +42,7 @@ namespace FirstShop
             var pendingCustomerList = new List<CustomerEntity>();
             var successBought = new List<CustomerEntity>();
             var customersList = new List<CustomerEntity>();
+            var filterCustomersList = new List<CustomerEntity>();
             var listIdSynch = new List<int>();
             var report = new Report();
             int counterBasketId = 0;
@@ -53,12 +54,9 @@ namespace FirstShop
 
                 if (customersList.Count != 0)
                 {
-                    var filterCustomersList = customersList.Where(x => (x.Gender == "WOMAN")).ToList();
-                                                                 
-
-
-
-                    //var customers = filterCustomersList.FirstOrDefault();
+                    filterCustomersList = customersList.OrderBy(y => y.Items.Count())
+                                                       .Where(x => (x.Gender == "WOMAN") &&
+                                                       (!listIdSynch.Contains(x.Id))).ToList();
 
 
                     foreach (var customer in filterCustomersList)

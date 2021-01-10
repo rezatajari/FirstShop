@@ -64,7 +64,7 @@ namespace FirstShop.Repositories
         {
             CustomersList = new List<CustomerEntity>();
             int idCounter = 50;
-            int iCounter = 0;
+            int iCounter = 1;
             while (true)
             {
                 await Task.Run(() =>
