@@ -11,9 +11,10 @@ namespace FirstShop.View
         public void ShowResult(BasketEntity basket)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Id: {basket.Id}");
+            Console.WriteLine($"Basket Id is: {basket.Id}");
             Console.WriteLine($"Gender: {basket.CustomerEntity.Gender}");
             Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"Customer Id: {basket.CustomerEntity.Id}");
             Console.WriteLine($"FullName: {basket.CustomerEntity.FullName}");
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Date Entrance: {basket.EnterDateTime}");

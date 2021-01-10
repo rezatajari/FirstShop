@@ -44,7 +44,6 @@ namespace FirstShop
             var customersList = new List<CustomerEntity>();
             var listIdSynch = new List<int>();
             var report = new Report();
-            int counterCustomerId = 0;
             int counterBasketId = 0;
 
             while (true)
@@ -54,19 +53,20 @@ namespace FirstShop
 
                 if (customersList.Count != 0)
                 {
+                    var filterCustomersList = customersList.Where(x => (x.Gender == "WOMAN")).ToList();
+                                                                 
 
-                    var filterCustomerList = customersList.OrderBy(x => x.Gender)
-                                                .Where(x => x.Gender == "WOMAN" && !listIdSynch.Contains(x.Id))
-                                                .ToList();
 
-                    foreach (var customer in filterCustomerList)
+
+                    //var customers = filterCustomersList.FirstOrDefault();
+
+
+                    foreach (var customer in filterCustomersList)
                     {
                         await Task.Run(() =>
                         {
                             // بروزرسانی اقلام داخل مغازه
                             shop.ItemsList = Repository.UpdateShopItems;
-
-                            customer.Id = ++counterCustomerId;
 
                             // بررسی موجود بودن اقلام مورد نیاز مشتری
                             bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
@@ -85,6 +85,7 @@ namespace FirstShop
                                 report.ShowResult(basket);
                             }
 
+                            // لیست آیدی مشتریانی که به درخواستشان پاسخ داده شده
                             listIdSynch.Add(customer.Id);
 
                             // هر مشتری را در یک ثانیه پاسخ داده می شود

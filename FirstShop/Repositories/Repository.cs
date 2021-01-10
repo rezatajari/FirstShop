@@ -63,15 +63,17 @@ namespace FirstShop.Repositories
         public async Task CreatingCustomer()
         {
             CustomersList = new List<CustomerEntity>();
-
+            int idCounter = 50;
+            int iCounter = 0;
             while (true)
             {
                 await Task.Run(() =>
                  {
-                     for (int i = 1; i <= 50; i++)
+                     for (int i = iCounter; i < idCounter; i++)
                      {
                          var customer = new CustomerEntity();
 
+                         customer.Id = i;
                          var gender = GetGender();
 
                          if (gender == "MAN")
@@ -80,11 +82,12 @@ namespace FirstShop.Repositories
                              customer.FullName = GetWomanName();
 
                          customer.Gender = gender;
-
                          customer.Items = CreateItemsCustomer().Result;
-
                          CustomersList.Add(customer);
                      }
+
+                     iCounter = idCounter;
+                     idCounter += 50;
                  });
 
                 // هر یک دقیقه 50 تا مشتری جدید آماده برای رفتن به صف می شوند
@@ -100,10 +103,11 @@ namespace FirstShop.Repositories
         {
             var itemsList = new List<ItemsEntity>();
             var getRandomItems = new RandomItem();
+            var randomItemNumber = new Random().Next(1, 5);
 
             await Task.Run(() =>
             {
-                for (int i = 1; i <= 4; i++)
+                for (int i = 1; i <= randomItemNumber; i++)
                 {
                     var newItem = getRandomItems.SetItemsCustomer();
 
