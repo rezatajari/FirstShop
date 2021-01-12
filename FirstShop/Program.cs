@@ -54,10 +54,12 @@ namespace FirstShop
 
                 if (customersList.Count != 0)
                 {
+                    // لیست مشتریا بر اساس اولویت زنها و کسانی که تعداد کم اقلام می خواهند
+                    // و نیز مقدار کمتری اقلام مورد نظرشان را می خواهند فیلتر کرده ایم
                     filterCustomersList = customersList.OrderBy(y => y.Items.Count())
+                                                        .ThenBy(i => i.Items.Sum(q => q.Qnt))
                                                        .Where(x => (x.Gender == "WOMAN") &&
                                                        (!listIdSynch.Contains(x.Id))).ToList();
-
 
                     foreach (var customer in filterCustomersList)
                     {
