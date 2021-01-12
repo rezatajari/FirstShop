@@ -19,12 +19,14 @@ namespace FirstShop.Repositories
         /// <returns></returns>
         public async Task ImportItems()
         {
-            UpdateShopItems = new List<ItemsEntity>();
-            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.MILK, Qnt = 0 });
-            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.BREAD, Qnt = 0 });
-            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.RICE, Qnt = 0 });
-            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.POTATO, Qnt = 0 });
-            UpdateShopItems.Add(new ItemsEntity() { Stuff = ItemsEntity.TOMATO, Qnt = 0 });
+            UpdateShopItems = new List<ItemsEntity>
+            {
+                new ItemsEntity() { Stuff = ItemsEntity.MILK, Qnt = 0 },
+                new ItemsEntity() { Stuff = ItemsEntity.BREAD, Qnt = 0 },
+                new ItemsEntity() { Stuff = ItemsEntity.RICE, Qnt = 0 },
+                new ItemsEntity() { Stuff = ItemsEntity.POTATO, Qnt = 0 },
+                new ItemsEntity() { Stuff = ItemsEntity.TOMATO, Qnt = 0 }
+            };
 
             while (true)
             {
@@ -69,7 +71,7 @@ namespace FirstShop.Repositories
             {
                 await Task.Run(() =>
                  {
-                     for (int i = iCounter; i < idCounter; i++)
+                     for (int i = iCounter; i <= idCounter; i++)
                      {
                          var customer = new CustomerEntity();
 

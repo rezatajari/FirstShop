@@ -36,62 +36,61 @@ namespace FirstShop
         #region هسته برنامه
         public static async Task ProcessOrders()
         {
+            #region تعریف متغییر ها
             var repository = new Repository();
             var shop = new ShopEntity();
             var basketOfCustomer = new BasketOfCustomer();
             var pendingCustomerList = new List<CustomerEntity>();
             var successBought = new List<CustomerEntity>();
             var customersList = new List<CustomerEntity>();
-            var filterCustomersList = new List<CustomerEntity>();
             var listIdSynch = new List<int>();
             var report = new Report();
             int counterBasketId = 0;
+            #endregion
 
             while (true)
             {
                 // بروزرسانی لیست مشتری ها
                 customersList = Repository.CustomersList;
 
-                if (customersList.Count != 0)
+                // هر یک ثانیه مشتری پاسخ داده می شود
+                Thread.Sleep(1000);
+
+                //  مشتری ای که اولویت دارد اول زن باشد و تعداد کم اقلام می خواهد
+                // و نیز مقدار کمتری اقلام مورد نظر را می خواهد فیلتر کرده ایم
+                var customer = customersList.OrderByDescending(g => g.Gender)
+                                                          .ThenBy(ic => ic.Items.Count())
+                                                          .ThenBy(ism => ism.Items.Sum(q => q.Qnt))
+                                                          .Where(x => (!listIdSynch.Contains(x.Id)))
+                                                          .FirstOrDefault();
+
+                if (customer != null)
                 {
-                    // لیست مشتریا بر اساس اولویت زنها و کسانی که تعداد کم اقلام می خواهند
-                    // و نیز مقدار کمتری اقلام مورد نظرشان را می خواهند فیلتر کرده ایم
-                    filterCustomersList = customersList.OrderBy(y => y.Items.Count())
-                                                        .ThenBy(i => i.Items.Sum(q => q.Qnt))
-                                                       .Where(x => (x.Gender == "WOMAN") &&
-                                                       (!listIdSynch.Contains(x.Id))).ToList();
-
-                    foreach (var customer in filterCustomersList)
+                    await Task.Run(() =>
                     {
-                        await Task.Run(() =>
+                        // بروزرسانی اقلام داخل مغازه
+                        shop.ItemsList = Repository.UpdateShopItems;
+
+                        // بررسی موجود بودن اقلام مورد نیاز مشتری
+                        bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
+
+                        // بررسی موجود بودن لیست اقلام مشتری در مغازه
+                        if (chackExistItems == false)
+                            pendingCustomerList.Add(customer);
+                        else
                         {
-                            // بروزرسانی اقلام داخل مغازه
-                            shop.ItemsList = Repository.UpdateShopItems;
+                            // مشخصات اجناس مورد نظر درخواستی مشتری
+                            var basket = basketOfCustomer.BasketImporter(++counterBasketId,
+                                                                         customer.Items,
+                                                                         DateTime.Now, customer);
 
-                            // بررسی موجود بودن اقلام مورد نیاز مشتری
-                            bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
+                            successBought.Add(customer);
+                            report.ShowResult(basket);
+                        }
 
-                            // بررسی موجود بودن لیست اقلام مشتری در مغازه
-                            if (chackExistItems == false)
-                                pendingCustomerList.Add(customer);
-                            else
-                            {
-                                // مشخصات اجناس مورد نظر درخواستی مشتری
-                                var basket = basketOfCustomer.BasketImporter(++counterBasketId,
-                                                                             customer.Items,
-                                                                             DateTime.Now, customer);
-
-                                successBought.Add(customer);
-                                report.ShowResult(basket);
-                            }
-
-                            // لیست آیدی مشتریانی که به درخواستشان پاسخ داده شده
-                            listIdSynch.Add(customer.Id);
-
-                            // هر مشتری را در یک ثانیه پاسخ داده می شود
-                            Thread.Sleep(1000);
-                        });
-                    }
+                        // لیست آیدی مشتریانی که به درخواستشان پاسخ داده شده
+                        listIdSynch.Add(customer.Id);
+                    });
                 }
             }
         }
