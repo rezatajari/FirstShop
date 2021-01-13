@@ -40,58 +40,53 @@ namespace FirstShop
             var repository = new Repository();
             var shop = new ShopEntity();
             var basketOfCustomer = new BasketOfCustomer();
-            var pendingCustomerList = new List<CustomerEntity>();
+            var pendingCustomers = new List<CustomerEntity>();
             var successBought = new List<CustomerEntity>();
-            var customersList = new List<CustomerEntity>();
-            var listIdSynch = new List<int>();
             var report = new Report();
             int counterBasketId = 0;
             #endregion
 
             while (true)
             {
-                // بروزرسانی لیست مشتری ها
-                customersList = Repository.CustomersList;
-
                 // هر یک ثانیه مشتری پاسخ داده می شود
                 Thread.Sleep(1000);
-
                 //  مشتری ای که اولویت دارد اول زن باشد و تعداد کم اقلام می خواهد
                 // و نیز مقدار کمتری اقلام مورد نظر را می خواهد فیلتر کرده ایم
-                var customer = customersList.OrderByDescending(g => g.Gender)
-                                                          .ThenBy(ic => ic.Items.Count())
-                                                          .ThenBy(ism => ism.Items.Sum(q => q.Qnt))
-                                                          .Where(x => (!listIdSynch.Contains(x.Id)))
-                                                          .FirstOrDefault();
+                var customer = Repository.CustomersList.OrderByDescending(g => g.Gender)
+                                                       .ThenBy(ic => ic.Items.Count())
+                                                       .ThenBy(ism => ism.Items.Sum(q => q.Qnt))
+                                                       .FirstOrDefault();
+                // بدون سینک درست شود، که لیست اصلی بزرگ نشود
+                // انبار ذخیره هایش کم شود
 
-                if (customer != null)
+                if (customer == null)
+                    continue;
+
+                await Task.Run(() =>
                 {
-                    await Task.Run(() =>
+                    // بروزرسانی اقلام داخل مغازه
+                    shop.ItemsList = Repository.UpdateShopItems;
+
+                    // بررسی موجود بودن اقلام مورد نیاز مشتری
+                    bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
+
+                    // بررسی موجود بودن لیست اقلام مشتری در مغازه
+                    if (chackExistItems == false)
+                        pendingCustomers.Add(customer);
+                    else
                     {
-                        // بروزرسانی اقلام داخل مغازه
-                        shop.ItemsList = Repository.UpdateShopItems;
+                        // مشخصات اجناس مورد نظر درخواستی مشتری
+                        var basket = basketOfCustomer.BasketImporter(++counterBasketId,
+                                                                 customer.Items,
+                                                                 DateTime.Now, customer);
 
-                        // بررسی موجود بودن اقلام مورد نیاز مشتری
-                        bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
+                        successBought.Add(customer);
+                        report.ShowResult(basket);
+                    }
 
-                        // بررسی موجود بودن لیست اقلام مشتری در مغازه
-                        if (chackExistItems == false)
-                            pendingCustomerList.Add(customer);
-                        else
-                        {
-                            // مشخصات اجناس مورد نظر درخواستی مشتری
-                            var basket = basketOfCustomer.BasketImporter(++counterBasketId,
-                                                                         customer.Items,
-                                                                         DateTime.Now, customer);
-
-                            successBought.Add(customer);
-                            report.ShowResult(basket);
-                        }
-
-                        // لیست آیدی مشتریانی که به درخواستشان پاسخ داده شده
-                        listIdSynch.Add(customer.Id);
-                    });
-                }
+                    var removeCustomer = Repository.CustomersList.Single(c => c.Id == customer.Id);
+                    Repository.CustomersList.Remove(removeCustomer);
+                });
             }
         }
         #endregion
