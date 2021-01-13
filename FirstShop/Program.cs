@@ -50,14 +50,13 @@ namespace FirstShop
             {
                 // هر یک ثانیه مشتری پاسخ داده می شود
                 Thread.Sleep(1000);
+
                 //  مشتری ای که اولویت دارد اول زن باشد و تعداد کم اقلام می خواهد
                 // و نیز مقدار کمتری اقلام مورد نظر را می خواهد فیلتر کرده ایم
                 var customer = Repository.CustomersList.OrderByDescending(g => g.Gender)
                                                        .ThenBy(ic => ic.Items.Count())
                                                        .ThenBy(ism => ism.Items.Sum(q => q.Qnt))
                                                        .FirstOrDefault();
-                // بدون سینک درست شود، که لیست اصلی بزرگ نشود
-                // انبار ذخیره هایش کم شود
 
                 if (customer == null)
                     continue;
@@ -84,7 +83,8 @@ namespace FirstShop
                         report.ShowResult(basket);
                     }
 
-                    var removeCustomer = Repository.CustomersList.Single(c => c.Id == customer.Id);
+                    // مرحله حذف مشتری از لیست اصلی مشتریان
+                    var removeCustomer = Repository.CustomersList.First(c => c.Id == customer.Id);
                     Repository.CustomersList.Remove(removeCustomer);
                 });
             }
