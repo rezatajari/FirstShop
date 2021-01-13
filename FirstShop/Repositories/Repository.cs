@@ -73,18 +73,22 @@ namespace FirstShop.Repositories
                  {
                      for (int i = iCounter; i <= idCounter; i++)
                      {
-                         var customer = new CustomerEntity();
+                         string fullName;
 
-                         customer.Id = i;
                          var gender = GetGender();
-
                          if (gender == "MAN")
-                             customer.FullName = GetManName();
+                             fullName = GetManName();
                          else
-                             customer.FullName = GetWomanName();
+                             fullName = GetWomanName();
 
-                         customer.Gender = gender;
-                         customer.Items = CreateItemsCustomer().Result;
+                         var customer = new CustomerEntity()
+                         {
+                             Id = i,
+                             FullName = fullName,
+                             Gender = gender,
+                             Items = CreateItemsCustomer().Result
+                         };
+
                          CustomersList.Add(customer);
                      }
 
@@ -104,25 +108,22 @@ namespace FirstShop.Repositories
         public async Task<List<ItemsEntity>> CreateItemsCustomer()
         {
             var itemsList = new List<ItemsEntity>();
-            var getRandomItems = new RandomItem();
             var randomItemNumber = new Random().Next(1, 5);
 
             await Task.Run(() =>
             {
                 for (int i = 1; i <= randomItemNumber; i++)
                 {
+
+                    var getRandomItems = new RandomItem();
                     var newItem = getRandomItems.SetItemsCustomer();
 
                     // زمانی که یک آیتم تکراری انتخاب شده است آیتم مورد نظر در لیست بروزرسانی می گردد
                     var clearDoubleItems = itemsList.FirstOrDefault(a => a.Stuff == newItem.Stuff);
                     if (clearDoubleItems != null)
-                    {
                         clearDoubleItems.Qnt += newItem.Qnt;
-                    }
                     else
-                    {
                         itemsList.Add(newItem);
-                    }
                 }
             });
 

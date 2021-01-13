@@ -8,6 +8,5 @@ namespace FirstShop.Model
     {
         public int Id { get; set; }
         public List<ItemsEntity> ItemsList { get; set; }
-        public List<CustomerEntity> BuyCustomerList { get; set; }
     }
 }

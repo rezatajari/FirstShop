@@ -37,12 +37,8 @@ namespace FirstShop
         public static async Task ProcessOrders()
         {
             #region تعریف متغییر ها
-            var repository = new Repository();
-            var shop = new ShopEntity();
-            var basketOfCustomer = new BasketOfCustomer();
             var pendingCustomers = new List<CustomerEntity>();
             var successBought = new List<CustomerEntity>();
-            var report = new Report();
             int counterBasketId = 0;
             #endregion
 
@@ -63,8 +59,13 @@ namespace FirstShop
 
                 await Task.Run(() =>
                 {
-                    // بروزرسانی اقلام داخل مغازه
-                    shop.ItemsList = Repository.UpdateShopItems;
+                    var shop = new ShopEntity
+                    {
+                        // بروزرسانی اقلام داخل مغازه
+                        ItemsList = Repository.UpdateShopItems
+                    };
+
+                    var repository = new Repository();
 
                     // بررسی موجود بودن اقلام مورد نیاز مشتری
                     bool chackExistItems = repository.ChackExistItems(customer.Items, shop.ItemsList).Result;
@@ -74,13 +75,17 @@ namespace FirstShop
                         pendingCustomers.Add(customer);
                     else
                     {
+                        var basketOfCustomer = new BasketOfCustomer();
+
                         // مشخصات اجناس مورد نظر درخواستی مشتری
                         var basket = basketOfCustomer.BasketImporter(++counterBasketId,
                                                                  customer.Items,
                                                                  DateTime.Now, customer);
 
                         successBought.Add(customer);
-                        report.ShowResult(basket);
+
+                        var reporting = new Report();
+                        reporting.ShowResult(basket);
                     }
 
                     // مرحله حذف مشتری از لیست اصلی مشتریان
